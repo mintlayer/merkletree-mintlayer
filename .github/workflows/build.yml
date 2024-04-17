@@ -32,6 +32,9 @@ jobs:
         run: cargo test --release --workspace
       - name: Run doc tests
         run: cargo test --release --doc
+      - name: Run all examples
+        shell: bash
+        run: ls examples/*.rs | xargs -n1 -I{} sh -c 'cargo run --example $(basename {} .rs)'
 
   build_ubuntu:
     env:
@@ -57,6 +60,8 @@ jobs:
         run: cargo test --release --workspace
       - name: Run doc tests
         run: cargo test --release --doc
+      - name: Run all examples
+        run: ls examples/*.rs | xargs -n1 -I{} sh -c 'cargo run --example $(basename {} .rs)'
 
   build_macos:
     runs-on: macos-latest
@@ -76,3 +81,5 @@ jobs:
         run: cargo test --release --workspace
       - name: Run doc tests
         run: cargo test --release --doc
+      - name: Run all examples
+        run: ls examples/*.rs | xargs -n1 -I{} sh -c 'cargo run --example $(basename {} .rs)'
