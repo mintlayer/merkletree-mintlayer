@@ -73,11 +73,21 @@ fn main() {
     let leaf3 = hash_data("2");
     let leaf4 = hash_data("3");
 
-    // The tree is defined as a vector, from left to right
+    // The tree is defined from a vector of leaves, from left to right
     let tree =
         MerkleTree::<TreeNode, HashAlgo>::from_leaves(vec![leaf1, leaf2, leaf3, leaf4]).unwrap();
 
-    println!("Merkle tree root: {}", hex::encode(tree.root()));
+    // Let's get the root
+    let tree_root = tree.root();
+    println!("Merkle tree root: {}", hex::encode(tree_root));
+
+    // Let's verify some properties about this tree
+    // The number of leaves is 4
+    assert_eq!(tree.leaf_count().get(), 4);
+    // The number of levels is 3 (4 leaves -> 2 nodes -> 1 root)
+    assert_eq!(tree.level_count().get(), 3);
+    // Total number of nodes in the tree (4 + 2 + 1)
+    assert_eq!(tree.total_node_count().get(), 7);
 
     // We attempt to recreate the expected root manually
     let mut node10 = HashAlgo::new();
