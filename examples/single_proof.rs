@@ -13,10 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This is a simple example where we calculate the root of a merkle tree
+// This is an example where we calculate the inclusion proof of a leaf in the tree and test it
 
 use blake2::{digest::typenum, Digest};
-use merkletree::{hasher::PairHasher, tree::MerkleTree};
+use merkletree::{
+    hasher::PairHasher,
+    proof::{
+        single::{SingleProofHashes, SingleProofNodes},
+        verify_result::ProofVerifyResult,
+    },
+    tree::MerkleTree,
+};
 
 // You can use any hashing function you like, we use blake2b here as an example
 type Blake2bHasher = blake2::Blake2b<typenum::U32>;
@@ -79,35 +86,26 @@ fn main() {
     let tree =
         MerkleTree::<TreeNode, HashAlgo>::from_leaves(vec![leaf0, leaf1, leaf2, leaf3]).unwrap();
 
-    // Let's get the root
-    let tree_root = tree.root();
-    println!("Merkle tree root: {}", hex::encode(tree_root));
+    // Proof that leaf number 2, this is an abstract form of the proof that depends on the tree
+    let inclusion_proof = SingleProofNodes::from_tree_leaf(&tree, 2).unwrap();
 
-    // Let's verify some properties about this tree
-    // The number of leaves is 4
-    assert_eq!(tree.leaf_count().get(), 4);
-    // The number of levels is 3 (4 leaves -> 2 nodes -> 1 root)
-    assert_eq!(tree.level_count().get(), 3);
-    // Total number of nodes in the tree (4 + 2 + 1)
-    assert_eq!(tree.total_node_count().get(), 7);
+    // Now this object is self-contained, and can be used to prove that a leaf exists
+    let branch = inclusion_proof.into_values();
 
-    // We attempt to recreate the expected root manually
-    let mut node10 = HashAlgo::new();
-    node10.write(leaf0);
-    node10.write(leaf1);
+    // Now we pretend we serialized the data (feel free to use the Encode/Decode using scale-codec, but you have to enable the feature),
+    // and restore it from serialization, and attempted to prove that the leaf is included
+    let restored_leaf_index = branch.leaf_index_in_level();
+    let restored_branch = branch.into_hashes();
 
-    let mut node11 = HashAlgo::new();
-    node11.write(leaf2);
-    node11.write(leaf3);
+    let inclusion_proof_reconstructed =
+        SingleProofHashes::<_, HashAlgo>::from_leaf_index_and_branch(
+            restored_leaf_index,
+            restored_branch,
+        );
 
-    let mut node00 = HashAlgo::new();
-    let n10 = node10.finalize();
-    node00.write(n10);
-    let n11 = node11.finalize();
-    node00.write(n11);
-
-    let root_that_we_created_manually = node00.finalize();
-
-    // the root calculated matches the one calculated by the tree
-    assert_eq!(tree.root(), root_that_we_created_manually);
+    // Now we prove that leaf2 exists in the tree
+    assert_eq!(
+        inclusion_proof_reconstructed.verify(leaf2, tree.root()),
+        ProofVerifyResult::PassedDecisively
+    );
 }

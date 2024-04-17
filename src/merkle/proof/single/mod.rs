@@ -140,6 +140,14 @@ impl<T: Eq, H: PairHasher<Type = T>> SingleProofHashes<T, H> {
     pub fn leaf_index_in_level(&self) -> u32 {
         self.leaf_index_in_level
     }
+
+    pub fn from_leaf_index_and_branch(leaf_index: u32, branch_nodes: Vec<T>) -> Self {
+        Self {
+            leaf_index_in_level: leaf_index,
+            branch: branch_nodes,
+            _hasher: std::marker::PhantomData,
+        }
+    }
 }
 
 impl<T: Eq, H: PairHasher<Type = T>> SingleProofHashes<T, H> {
