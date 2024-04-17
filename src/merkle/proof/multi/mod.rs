@@ -236,6 +236,14 @@ impl<T, H> MultiProofHashes<T, H> {
     pub fn tree_leaf_count(&self) -> u32 {
         self.tree_leaf_count
     }
+
+    pub fn from_leaf_count_and_nodes(tree_leaf_count: u32, nodes: BTreeMap<u32, T>) -> Self {
+        Self {
+            nodes,
+            tree_leaf_count,
+            _phantom: std::marker::PhantomData,
+        }
+    }
 }
 
 impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
