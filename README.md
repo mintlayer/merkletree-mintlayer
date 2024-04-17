@@ -23,7 +23,7 @@ This library doesn't hash the leaves.
 
 You can find examples for how to get started with this library in the [examples directory](./examples/README.md). However, this is a quick example:
 
-```
+```rust
 use blake2::{digest::typenum, Digest};
 use merkletree::{hasher::PairHasher, tree::MerkleTree};
 
