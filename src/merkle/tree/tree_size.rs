@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,11 +41,16 @@ impl TreeSize {
     }
 
     pub fn leaf_count(&self) -> NonZeroU32 {
-        ((self.0 + 1) / 2).try_into().expect("Guaranteed by construction")
+        ((self.0 + 1) / 2)
+            .try_into()
+            .expect("Guaranteed by construction")
     }
 
     pub fn level_count(&self) -> NonZeroU32 {
-        self.0.count_ones().try_into().expect("Guaranteed by construction")
+        self.0
+            .count_ones()
+            .try_into()
+            .expect("Guaranteed by construction")
     }
 
     pub fn from_u32(value: u32) -> Result<Self, TreeSizeError> {
@@ -114,7 +119,9 @@ impl TryFrom<usize> for TreeSize {
         if value > MAX_TREE_SIZE as usize {
             return Err(TreeSizeError::HugeTreeUnsupported(value as u64));
         }
-        let size: u32 = value.try_into().expect("Must fit because of last MAX_TREE_SIZE check");
+        let size: u32 = value
+            .try_into()
+            .expect("Must fit because of last MAX_TREE_SIZE check");
         Self::try_from(size)
     }
 }
@@ -411,7 +418,9 @@ mod tests {
             );
             assert_eq!(
                 tree_size.iter_pairs_indices().collect::<Vec<_>>(),
-                (0..tree_size.get() / 2).map(|i| (i * 2, i * 2 + 1)).collect::<Vec<_>>()
+                (0..tree_size.get() / 2)
+                    .map(|i| (i * 2, i * 2 + 1))
+                    .collect::<Vec<_>>()
             );
         }
     }

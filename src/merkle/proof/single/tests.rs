@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,9 @@ use crate::{
 };
 
 fn gen_leaves(n: u32) -> Vec<HashedData> {
-    (0..n).map(|i| hash_data(HashedData::from_low_u64_be(i as u64))).collect()
+    (0..n)
+        .map(|i| hash_data(HashedData::from_low_u64_be(i as u64)))
+        .collect()
 }
 
 #[test]
@@ -116,7 +118,9 @@ fn single_proof_eight_leaves_tamper_with_nodes(#[case] seed: Seed, #[case] leaf_
 
     for (leaf_index, _) in leaves.iter().enumerate() {
         let leaf_index = leaf_index as u32;
-        let proof = SingleProofNodes::from_tree_leaf(&t, leaf_index).unwrap().into_values();
+        let proof = SingleProofNodes::from_tree_leaf(&t, leaf_index)
+            .unwrap()
+            .into_values();
 
         // Tamper with the proof
         for node_index in 0..proof.branch.len() {
@@ -147,9 +151,13 @@ fn single_proof_eight_leaves_tamper_with_leaf(#[case] seed: Seed, #[case] leaf_c
     let t = MerkleTree::<HashedData, HashAlgo>::from_leaves(leaves).unwrap();
 
     for leaf_index in 0..leaf_count {
-        let proof = SingleProofNodes::from_tree_leaf(&t, leaf_index).unwrap().into_values();
+        let proof = SingleProofNodes::from_tree_leaf(&t, leaf_index)
+            .unwrap()
+            .into_values();
 
         // Use a botched leaf
-        assert!(proof.verify(HashedData::random_using(&mut rng), t.root()).failed());
+        assert!(proof
+            .verify(HashedData::random_using(&mut rng), t.root())
+            .failed());
     }
 }

@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,9 @@ use crate::internal::{hash_data, HashAlgo, HashedData};
 use super::*;
 
 fn gen_leaves(n: u32) -> Vec<HashedData> {
-    (0..n).map(|i| hash_data(HashedData::from_low_u64_be(i as u64))).collect()
+    (0..n)
+        .map(|i| hash_data(HashedData::from_low_u64_be(i as u64)))
+        .collect()
 }
 
 fn indices_to_map(leaves_indices: &[u32], leaves: &[HashedData]) -> BTreeMap<u32, HashedData> {
@@ -122,7 +124,11 @@ fn multi_proof_two_leaves_with_proof_leaves(#[case] input: &[u32], #[case] nodes
 
     let multi_proof = MultiProofNodes::from_tree_leaves(&t, input).unwrap();
     assert_eq!(
-        multi_proof.nodes().iter().map(|n| n.abs_index()).collect::<Vec<_>>(),
+        multi_proof
+            .nodes()
+            .iter()
+            .map(|n| n.abs_index())
+            .collect::<Vec<_>>(),
         nodes
     );
     assert_eq!(
@@ -159,7 +165,11 @@ fn multi_proof_four_leaves_with_proof_leaves(#[case] input: &[u32], #[case] node
 
     let multi_proof = MultiProofNodes::from_tree_leaves(&t, input).unwrap();
     assert_eq!(
-        multi_proof.nodes().iter().map(|n| n.abs_index()).collect::<Vec<_>>(),
+        multi_proof
+            .nodes()
+            .iter()
+            .map(|n| n.abs_index())
+            .collect::<Vec<_>>(),
         nodes
     );
     assert_eq!(
@@ -454,7 +464,11 @@ fn multi_proof_eight_leaves_with_proof_leaves(#[case] input: &[u32], #[case] nod
 
     let multi_proof = MultiProofNodes::from_tree_leaves(&t, input).unwrap();
     assert_eq!(
-        multi_proof.nodes().iter().map(|n| n.abs_index()).collect::<Vec<_>>(),
+        multi_proof
+            .nodes()
+            .iter()
+            .map(|n| n.abs_index())
+            .collect::<Vec<_>>(),
         nodes
     );
     assert_eq!(
@@ -641,19 +655,25 @@ fn multi_proof_verification_tampered_nodes(
             // Empty case is tested in another test
             continue;
         }
-        let multi_proof =
-            MultiProofNodes::from_tree_leaves(&t, &leaves_indices).unwrap().into_values();
+        let multi_proof = MultiProofNodes::from_tree_leaves(&t, &leaves_indices)
+            .unwrap()
+            .into_values();
 
         for node_idx in multi_proof.nodes.keys() {
             // assert that the node we'll mess with is already in the proof
             assert!(multi_proof.nodes.contains_key(node_idx));
 
             let mut multi_proof = multi_proof.clone();
-            multi_proof.nodes.insert(*node_idx, HashedData::random_using(&mut rng));
+            multi_proof
+                .nodes
+                .insert(*node_idx, HashedData::random_using(&mut rng));
 
             let leaves_hashes_map = indices_to_map(&leaves_indices, &leaves);
             assert!(
-                multi_proof.verify(leaves_hashes_map, t.root()).unwrap().failed(),
+                multi_proof
+                    .verify(leaves_hashes_map, t.root())
+                    .unwrap()
+                    .failed(),
                 "Failed for indices: {:?}",
                 leaves_indices
             );
@@ -702,8 +722,9 @@ fn multi_proof_verification_tampered_leaves(
             // Empty case is tested in another test
             continue;
         }
-        let multi_proof =
-            MultiProofNodes::from_tree_leaves(&t, &leaves_indices).unwrap().into_values();
+        let multi_proof = MultiProofNodes::from_tree_leaves(&t, &leaves_indices)
+            .unwrap()
+            .into_values();
         let leaves_hashes_map = indices_to_map(&leaves_indices, &leaves);
 
         for leaf_idx in leaves_hashes_map.keys() {
@@ -714,7 +735,10 @@ fn multi_proof_verification_tampered_leaves(
             leaves_hashes_map.insert(*leaf_idx, HashedData::random_using(&mut rng));
 
             assert!(
-                multi_proof.verify(leaves_hashes_map, t.root()).unwrap().failed(),
+                multi_proof
+                    .verify(leaves_hashes_map, t.root())
+                    .unwrap()
+                    .failed(),
                 "Failed for indices: {:?}",
                 leaves_indices
             );
@@ -770,8 +794,9 @@ fn multi_proof_verification_tampered_tree_size_into_invalid_value(
             // Empty case is tested in another test
             continue;
         }
-        let mut multi_proof =
-            MultiProofNodes::from_tree_leaves(&t, &leaves_indices).unwrap().into_values();
+        let mut multi_proof = MultiProofNodes::from_tree_leaves(&t, &leaves_indices)
+            .unwrap()
+            .into_values();
         let leaves_hashes_map = indices_to_map(&leaves_indices);
 
         // Tamper with tree size
@@ -834,8 +859,9 @@ fn multi_proof_verification_tampered_tree_size_into_wrong_value(
             // Empty case is tested in another test
             continue;
         }
-        let mut multi_proof =
-            MultiProofNodes::from_tree_leaves(&t, &leaves_indices).unwrap().into_values();
+        let mut multi_proof = MultiProofNodes::from_tree_leaves(&t, &leaves_indices)
+            .unwrap()
+            .into_values();
         let leaves_hashes_map = indices_to_map(&leaves_indices);
 
         // Tamper with tree size. By multiplying by 2, the size is valid, but the nodes are not for that tree

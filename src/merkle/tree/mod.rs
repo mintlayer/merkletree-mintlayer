@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,13 +54,18 @@ impl<T, H> Eq for MerkleTree<T, H> where T: Eq {}
 
 impl<T: Debug, H> Debug for MerkleTree<T, H> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("MerkleTree").field("tree", &self.tree).finish()
+        f.debug_struct("MerkleTree")
+            .field("tree", &self.tree)
+            .finish()
     }
 }
 
 impl<T: Clone, H> MerkleTree<T, H> {
     pub fn root(&self) -> T {
-        self.tree.last().cloned().expect("By design, at least one element must exist")
+        self.tree
+            .last()
+            .cloned()
+            .expect("By design, at least one element must exist")
     }
 
     pub fn total_node_count(&self) -> TreeSize {
@@ -82,7 +87,10 @@ impl<T: Clone, H> MerkleTree<T, H> {
 
     pub fn node_value_from_bottom(&self, level_from_bottom: u32, index_in_level: u32) -> Option<T> {
         let index_in_tree = NodePosition::from_position(
-            self.tree.len().try_into().expect("Tree size is by design > 0"),
+            self.tree
+                .len()
+                .try_into()
+                .expect("Tree size is by design > 0"),
             level_from_bottom,
             index_in_level,
         )?
@@ -97,7 +105,10 @@ impl<T: Clone, H> MerkleTree<T, H> {
         index_in_level: u32,
     ) -> Option<Node<T, H>> {
         let absolute_index = NodePosition::from_position(
-            self.tree.len().try_into().expect("Tree size is by design > 0"),
+            self.tree
+                .len()
+                .try_into()
+                .expect("Tree size is by design > 0"),
             level_from_bottom,
             index_in_level,
         )?

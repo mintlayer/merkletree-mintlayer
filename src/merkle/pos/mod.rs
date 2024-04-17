@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,7 +90,10 @@ impl NodePosition {
             .trailing_zeros();
 
         let level = self.tree_size.level_count().get() - level_from_top;
-        let level_start = self.tree_size.level_start(level).expect("Abs index is valid");
+        let level_start = self
+            .tree_size
+            .level_start(level)
+            .expect("Abs index is valid");
         assert!(level_start <= self.abs_index());
         (level, self.abs_index() - level_start)
     }

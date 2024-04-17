@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,10 @@ impl<T: Debug, H> Debug for MultiProofNodes<'_, T, H> {
 
 /// Ensure the leaves indices are sorted and unique
 fn is_sorted_and_unique(leaves_indices: &[u32]) -> bool {
-    leaves_indices.iter().tuple_windows::<(&u32, &u32)>().all(|(i, j)| i < j)
+    leaves_indices
+        .iter()
+        .tuple_windows::<(&u32, &u32)>()
+        .all(|(i, j)| i < j)
 }
 
 fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> {
@@ -186,7 +189,10 @@ impl<'a, T: Clone, H: PairHasher<Type = T>> MultiProofNodes<'a, T, H> {
         Ok(Self {
             proof_leaves: leaves_indices
                 .iter()
-                .map(|i| tree.node_from_bottom(0, *i).expect("Leaves already checked"))
+                .map(|i| {
+                    tree.node_from_bottom(0, *i)
+                        .expect("Leaves already checked")
+                })
                 .collect(),
             nodes: proof,
             tree_leaf_count: tree.leaf_count().get(),
@@ -195,7 +201,11 @@ impl<'a, T: Clone, H: PairHasher<Type = T>> MultiProofNodes<'a, T, H> {
 
     pub fn into_values(self) -> MultiProofHashes<T, H> {
         MultiProofHashes {
-            nodes: self.nodes.into_iter().map(|n| (n.abs_index(), n.hash().clone())).collect(),
+            nodes: self
+                .nodes
+                .into_iter()
+                .map(|n| (n.abs_index(), n.hash().clone()))
+                .collect(),
             tree_leaf_count: self.proof_leaves[0].tree().leaf_count().get(),
             _phantom: std::marker::PhantomData,
         }
@@ -231,8 +241,10 @@ impl<T, H> MultiProofHashes<T, H> {
 impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
     /// While verifying the multi-proof, we need to precalculate all the possible nodes that are required to build the root hash.
     fn calculate_missing_nodes(tree_size: TreeSize, input: BTreeMap<&u32, &T>) -> BTreeMap<u32, T> {
-        let mut result =
-            input.into_iter().map(|(a, b)| (*a, b.clone())).collect::<BTreeMap<u32, T>>();
+        let mut result = input
+            .into_iter()
+            .map(|(a, b)| (*a, b.clone()))
+            .collect::<BTreeMap<u32, T>>();
         for (index_l, index_r) in tree_size.iter_pairs_indices() {
             if !result.contains_key(&index_l) || !result.contains_key(&(index_r)) {
                 continue;
@@ -249,7 +261,9 @@ impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
             assert!(!node_r.node_kind().is_root(), "{}", root_err);
 
             if node_l.node_kind().is_left() && node_r.node_kind().is_right() {
-                let parent = node_l.parent().expect("Cannot be root because of loop range");
+                let parent = node_l
+                    .parent()
+                    .expect("Cannot be root because of loop range");
                 let hash = H::hash_pair(&result[&index_l], &result[&index_r]);
 
                 result.insert(parent.abs_index(), hash);
@@ -280,7 +294,10 @@ impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
             ));
         }
 
-        if leaves.iter().any(|(index, _hash)| *index >= self.tree_leaf_count) {
+        if leaves
+            .iter()
+            .any(|(index, _hash)| *index >= self.tree_leaf_count)
+        {
             return Err(MerkleProofVerificationError::LeavesIndicesOutOfRange(
                 leaves.keys().cloned().collect(),
                 self.tree_leaf_count,
@@ -290,14 +307,22 @@ impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
         let tree_size =
             TreeSize::from_u32(self.tree_leaf_count * 2 - 1).expect("Already proven from source");
 
-        if self.nodes.iter().any(|(index, _hash)| *index >= tree_size.get()) {
+        if self
+            .nodes
+            .iter()
+            .any(|(index, _hash)| *index >= tree_size.get())
+        {
             return Err(MerkleProofVerificationError::NodesIndicesOutOfRange(
                 self.nodes.keys().cloned().collect(),
                 tree_size.get(),
             ));
         }
 
-        let all_nodes = self.nodes.iter().chain(leaves.iter()).collect::<BTreeMap<_, _>>();
+        let all_nodes = self
+            .nodes
+            .iter()
+            .chain(leaves.iter())
+            .collect::<BTreeMap<_, _>>();
         let all_nodes = MultiProofHashes::<T, H>::calculate_missing_nodes(tree_size, all_nodes);
 
         // Result is Option<bool> because it must pass through the loop inside at least once; otherwise nothing is checked
@@ -315,8 +340,10 @@ impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
             while !curr_node_pos.node_kind().is_root() {
                 let err_msg = "We can never be at root yet as we checked in the loop entry";
 
-                let sibling_index =
-                    curr_node_pos.sibling().expect("This cannot be root").abs_index();
+                let sibling_index = curr_node_pos
+                    .sibling()
+                    .expect("This cannot be root")
+                    .abs_index();
                 let sibling = match all_nodes.get(&sibling_index) {
                     Some(sibling) => sibling.clone(),
                     None => {

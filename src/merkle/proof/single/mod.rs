@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// https://github.com/mintlayer/mintlayer-core/blob/master/LICENSE
+// https://github.com/mintlayer/merkletree-mintlayer/blob/master/LICENSE
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,7 +79,10 @@ impl<'a, T: Clone, H: PairHasher<Type = T>> SingleProofNodes<'a, T, H> {
             ),
         )?;
 
-        let proof: Vec<_> = leaf.into_iter_parents().map_while(|n| n.sibling()).collect();
+        let proof: Vec<_> = leaf
+            .into_iter_parents()
+            .map_while(|n| n.sibling())
+            .collect();
 
         assert_eq!(
             proof.len() as u32,
@@ -96,7 +99,11 @@ impl<'a, T: Clone, H: PairHasher<Type = T>> SingleProofNodes<'a, T, H> {
     }
 
     pub fn into_values(self) -> SingleProofHashes<T, H> {
-        let proof = self.branch.into_iter().map(|node| node.hash().clone()).collect::<Vec<_>>();
+        let proof = self
+            .branch
+            .into_iter()
+            .map(|node| node.hash().clone())
+            .collect::<Vec<_>>();
         let leaf_abs_index = self.leaf.into_position().position().1;
         SingleProofHashes {
             leaf_index_in_level: leaf_abs_index,
@@ -146,14 +153,18 @@ impl<T: Eq, H: PairHasher<Type = T>> SingleProofHashes<T, H> {
             };
         }
 
-        let hash = self.branch.iter().enumerate().fold(leaf, |prev_hash, (index, sibling)| {
-            let node_in_level_index = self.leaf_index_in_level >> index;
-            if node_in_level_index % 2 == 0 {
-                H::hash_pair(&prev_hash, sibling)
-            } else {
-                H::hash_pair(sibling, &prev_hash)
-            }
-        });
+        let hash = self
+            .branch
+            .iter()
+            .enumerate()
+            .fold(leaf, |prev_hash, (index, sibling)| {
+                let node_in_level_index = self.leaf_index_in_level >> index;
+                if node_in_level_index % 2 == 0 {
+                    H::hash_pair(&prev_hash, sibling)
+                } else {
+                    H::hash_pair(sibling, &prev_hash)
+                }
+            });
 
         match hash == root {
             true => ProofVerifyResult::PassedDecisively,
