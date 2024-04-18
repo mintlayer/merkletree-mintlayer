@@ -59,16 +59,16 @@ impl HashAlgo {
 
 // This is the important part, your hasher has to implement PairHasher
 impl PairHasher for HashAlgo {
-    type Type = TreeNode;
+    type NodeType = TreeNode;
 
-    fn hash_pair(left: &Self::Type, right: &Self::Type) -> Self::Type {
+    fn hash_pair(left: &Self::NodeType, right: &Self::NodeType) -> Self::NodeType {
         let mut h = Blake2bHasher::new();
         Digest::update(&mut h, left);
         Digest::update(&mut h, right);
         h.finalize_reset().into()
     }
 
-    fn hash_single(data: &Self::Type) -> Self::Type {
+    fn hash_single(data: &Self::NodeType) -> Self::NodeType {
         let mut h = Blake2bHasher::new();
         Digest::update(&mut h, data);
         h.finalize_reset().into()

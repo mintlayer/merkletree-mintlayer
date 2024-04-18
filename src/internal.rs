@@ -59,16 +59,16 @@ impl From<GenericArray<u8, typenum::U32>> for HashedData {
 }
 
 impl PairHasher for HashAlgo {
-    type Type = HashedData;
+    type NodeType = HashedData;
 
-    fn hash_pair(left: &Self::Type, right: &Self::Type) -> Self::Type {
+    fn hash_pair(left: &Self::NodeType, right: &Self::NodeType) -> Self::NodeType {
         let mut h = Blake2bHasher::new();
         Digest::update(&mut h, left);
         Digest::update(&mut h, right);
         h.finalize_reset().into()
     }
 
-    fn hash_single(data: &Self::Type) -> Self::Type {
+    fn hash_single(data: &Self::NodeType) -> Self::NodeType {
         let mut h = Blake2bHasher::new();
         Digest::update(&mut h, data);
         h.finalize_reset().into()

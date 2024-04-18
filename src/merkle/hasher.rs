@@ -19,11 +19,11 @@
 /// the node type, specifically.
 pub trait PairHasher: Sized + Clone {
     /// The node type in the merkle tree
-    type Type: Clone;
+    type NodeType: Clone;
 
     /// Hash a single node and return the hash value.
-    fn hash_single(data: &Self::Type) -> Self::Type;
+    fn hash_single(data: &Self::NodeType) -> Self::NodeType;
 
     /// Hash a pair of nodes and return the hash value.
-    fn hash_pair(left: &Self::Type, right: &Self::Type) -> Self::Type;
+    fn hash_pair(left: &Self::NodeType, right: &Self::NodeType) -> Self::NodeType;
 }

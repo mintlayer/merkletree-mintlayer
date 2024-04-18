@@ -121,7 +121,7 @@ impl<T: Clone, H> MerkleTree<T, H> {
     }
 }
 
-impl<T: Clone, H: PairHasher<Type = T>> MerkleTree<T, H> {
+impl<T: Clone, H: PairHasher<NodeType = T>> MerkleTree<T, H> {
     fn create_tree_from_padded_leaves(
         padded_leaves: impl IntoIterator<Item = T>,
     ) -> Result<Vec<T>, MerkleTreeFormError> {
@@ -226,7 +226,7 @@ impl<'a, T, H> Node<'a, T, H> {
     }
 }
 
-impl<'a, T: Clone, H: PairHasher<Type = T>> Node<'a, T, H> {
+impl<'a, T: Clone, H: PairHasher<NodeType = T>> Node<'a, T, H> {
     pub fn into_position(self) -> NodePosition {
         NodePosition::from_abs_index(self.tree().total_node_count(), self.absolute_index)
             .expect("Should never fail since the index is transitively valid")
@@ -276,7 +276,9 @@ impl<T: Debug, H> Debug for MerkleTreeNodeParentIterator<'_, T, H> {
     }
 }
 
-impl<'a, T: Clone, H: PairHasher<Type = T>> Iterator for MerkleTreeNodeParentIterator<'a, T, H> {
+impl<'a, T: Clone, H: PairHasher<NodeType = T>> Iterator
+    for MerkleTreeNodeParentIterator<'a, T, H>
+{
     type Item = Node<'a, T, H>;
 
     fn next(&mut self) -> Option<Node<'a, T, H>> {

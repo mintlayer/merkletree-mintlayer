@@ -98,7 +98,7 @@ impl<'a, T, H> MultiProofNodes<'a, T, H> {
     }
 }
 
-impl<'a, T: Clone, H: PairHasher<Type = T>> MultiProofNodes<'a, T, H> {
+impl<'a, T: Clone, H: PairHasher<NodeType = T>> MultiProofNodes<'a, T, H> {
     pub fn from_tree_leaves(
         tree: &'a MerkleTree<T, H>,
         leaves_indices: &[u32],
@@ -246,7 +246,7 @@ impl<T, H> MultiProofHashes<T, H> {
     }
 }
 
-impl<T: Eq + Clone, H: PairHasher<Type = T>> MultiProofHashes<T, H> {
+impl<T: Eq + Clone, H: PairHasher<NodeType = T>> MultiProofHashes<T, H> {
     /// While verifying the multi-proof, we need to precalculate all the possible nodes that are required to build the root hash.
     fn calculate_missing_nodes(tree_size: TreeSize, input: BTreeMap<&u32, &T>) -> BTreeMap<u32, T> {
         let mut result = input
