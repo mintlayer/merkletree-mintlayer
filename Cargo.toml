@@ -1,9 +1,13 @@
 [package]
 name = "merkletree-mintlayer"
+description = "A merkle tree versatile implementation with inclusion proof implementation, the one that is used in mintlayer-core"
 edition = "2021"
 rust-version = "1.75"
 version = "0.1.0"
 license = "MIT"
+repository = "https://github.com/mintlayer/merkletree-mintlayer"
+homepage = "https://mintlayer.org"
+authors = ["Samer Afach <samer.afach@mintlayer.org>"]
 
 [features]
 scale-codec = ["dep:parity-scale-codec"]
