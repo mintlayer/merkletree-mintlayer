@@ -16,7 +16,7 @@
 // This is an example where we calculate the inclusion proof of multiple-leaves in the tree and test it
 
 use blake2::{digest::typenum, Digest};
-use merkletree::{
+use merkletree_mintlayer::{
     hasher::PairHasher,
     proof::{
         multi::{MultiProofHashes, MultiProofNodes},

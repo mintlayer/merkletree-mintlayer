@@ -16,7 +16,7 @@
 // This is a simple example where we calculate the root of a merkle tree
 
 use blake2::{digest::typenum, Digest};
-use merkletree::{hasher::PairHasher, tree::MerkleTree};
+use merkletree_mintlayer::{hasher::PairHasher, tree::MerkleTree};
 
 // You can use any hashing function you like, we use blake2b here as an example
 type Blake2bHasher = blake2::Blake2b<typenum::U32>;
