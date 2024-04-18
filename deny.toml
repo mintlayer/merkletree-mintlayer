@@ -4,34 +4,13 @@ github = [
 ]
 
 [licenses]
-#we reject code without a license
+# we reject code without a license
 confidence-threshold = 0.92
 allow = [
     "Apache-2.0",
     "MIT",
     "Unicode-DFS-2016",
 ] # deny a license not in this set of licenses
-
-[[licenses.clarify]]
-name = "ring"
-expression = "LicenseRef-ring"
-license-files = [
-    { path = "LICENSE", hash = 0xbd0eed23 },
-]
-
-[[licenses.clarify]]
-name = "webpki"
-expression = "LicenseRef-webpki"
-license-files = [
-    { path = "LICENSE", hash = 0x001c7e6c },
-]
-
-[[licenses.clarify]]
-name = "rustls-webpki"
-expression = "LicenseRef-webpki"
-license-files = [
-    { path = "LICENSE", hash = 0x001c7e6c },
-]
 
 [advisories]
 db-path = "~/.cargo/advisory-dbs"
